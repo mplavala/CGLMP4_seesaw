@@ -19,7 +19,7 @@ def is_psd(matrix):
         return False
 
 
-def is_measurement(meas: list[np.ndarray], verbose :bool = False) -> bool:
+def is_measurement(meas: list[np.ndarray], verbose: bool = False) -> bool:
     """Check whether `meas` is a well-defined quantum measurement.
 
     Args:
@@ -52,7 +52,7 @@ def is_measurement(meas: list[np.ndarray], verbose :bool = False) -> bool:
     return square and same_dim and psd and complete
 
 
-def is_assemblage(assemblage: list[list[np.ndarray]], verbose :bool = False) -> bool:
+def is_assemblage(assemblage: list[list[np.ndarray]], verbose: bool = False) -> bool:
     """Check whether `assemblage` is a well-defined quantum measurement.
 
     Args:
@@ -72,8 +72,8 @@ def is_assemblage(assemblage: list[list[np.ndarray]], verbose :bool = False) -> 
 
     try:
         square = len(dims) == 2 and dims[0] == dims[1]
-        same_dim = np.all([[sigma.shape == dims for sigma in assemblage[x]] for x in range(nx)])
-        psd = np.all([[is_psd(sigma) for sigma in assemblage[x]] for x in range(nx)])
+        same_dim = np.all([sigma.shape == dims for x in range(nx) for sigma in assemblage[x]])
+        psd = np.all([is_psd(sigma) for x in range(nx) for sigma in assemblage[x]])
         non_signaling = np.all([np.allclose(sum(assemblage[x]), state) for x in range(nx)])
         normalized = np.allclose(np.trace(state), 1)
     except (ValueError, np.linalg.LinAlgError):
@@ -201,11 +201,11 @@ def see_saw(measurements: list[list[np.ndarray]]):
 
 
 if __name__ == '__main__':
-    N = 10
+    N = 10000
     results = []
 
-    for n in range(1, N+1):
-        print(f"n = {n}")
+    for n in range(N):
+        print(f"n = {n+1}")
         initial_measurements = [get_random_PVM(4), get_random_PVM(4)]
         [I_4, measurements, assemblage] = see_saw(initial_measurements)
 
@@ -216,4 +216,3 @@ if __name__ == '__main__':
     print(f"Best result = {np.max(results)}")
     
     np.save(f"results-N-{N}-I_4-{np.max(results)}", results)
-
